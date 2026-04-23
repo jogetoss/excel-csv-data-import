@@ -1,0 +1,143 @@
+[{
+    title : '@@userview.excelcsvdatafieldextraction.edit@@',
+    properties : [{
+        name : 'id',
+        label : 'ID',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.excelcsvdatafieldextraction.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.excelcsvdatafieldextraction.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.excelcsvdatafieldextraction.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@org.joget.plugin.excelcsv.ExcelCsvDataFieldExtractionMenu.pluginLabel@@'
+    },
+    {
+        name : 'formDefId',
+        label : '@@userview.excelcsvdatafieldextraction.formId@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/forms/options'
+    },
+    {
+        name : 'columnMapping',
+        label : '@@userview.excelcsvdatafieldextraction.columnMapping@@',
+        type : 'grid',
+        columns : [{
+            key : 'col',
+            label : '@@userview.excelcsvdatafieldextraction.columnNumber@@'
+        },
+        {
+            key : 'field',
+            label : '@@userview.excelcsvdatafieldextraction.fieldName@@',
+            type : 'autocomplete',
+            options_ajax_on_change : 'formDefId',
+            options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options',
+        }]
+    },
+    {
+        name : 'key',
+        label : '@@userview.excelcsvdatafieldextraction.keyColumnNumber@@',
+        type : 'textfield'
+    },
+    {
+        name : 'rowStart',
+        label : '@@userview.excelcsvdatafieldextraction.startRowNumber@@',
+        type : 'textfield'
+    },
+    {
+        name : 'treatFirstRowAsHeader',
+        label : '@@userview.excelcsvdatafieldextraction.treatFirstRowAsHeader@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'customCsvDelimiter',
+        label : '@@userview.excelcsvdatafieldextraction.customCsvDelimiter@@',
+        type : 'textfield'
+    },
+    {
+        name : 'customCsvQuote',
+        label : '@@userview.excelcsvdatafieldextraction.customCsvQuote@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@userview.excelcsvdatafieldextraction.actions@@',
+    properties : [{
+        name : 'corfirmation',
+        label : '@@userview.excelcsvdatafieldextraction.corfirmation@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '5'
+    },
+    {
+        name : 'messageOnError',
+        label : '@@userview.excelcsvdatafieldextraction.messageOnError@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '5'
+    },
+    {
+        name : 'messageOnSuccess',
+        label : '@@userview.excelcsvdatafieldextraction.messageAfterImported@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '5'
+    },
+    {
+        name : 'redirectUrl',
+        label : '@@userview.excelcsvdatafieldextraction.redirection@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@userview.excelcsvdatafieldextraction.ui@@',
+    properties : [{
+        name : 'customHeader',
+        label : '@@userview.excelcsvdatafieldextraction.customHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.excelcsvdatafieldextraction.customFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }],
+    developer_mode : 'advanced'
+},
+{
+    title : '@@userview.excelcsvdatafieldextraction.advanced@@',
+    properties : [{
+        name : 'disabledDelete',
+        label : '@@userview.excelcsvdatafieldextraction.disabledDelete@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'checkUTF8',
+        label : '@@userview.excelcsvdatafieldextraction.checkforUTF8@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+}]
