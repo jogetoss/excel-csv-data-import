@@ -55,6 +55,7 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
     private static final int PREVIEW_PAGE_SIZE = 10;
     private static final String SESSION_UPLOADED_ATTR = ExcelCsvDataFieldExtractionMenu.class.getName() + ".uploaded";
     private static final String SESSION_UPLOADED_FILENAME = "filenameUpper";
+    private static final String SESSION_UPLOADED_DISPLAY_FILENAME = "displayFilename";
     private static final String SESSION_UPLOADED_BYTES = "bytes";
 
     public static final String MODE_NEW = "NEW";
@@ -189,7 +190,8 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
                 }
             }
 
-            String filename = hasNewUpload ? importFile.getOriginalFilename().toUpperCase(Locale.ENGLISH) : cached.filenameUpper;
+            String rawOriginalFilename = hasNewUpload ? importFile.getOriginalFilename() : cached.displayFilename;
+            String filename = hasNewUpload ? rawOriginalFilename.toUpperCase(Locale.ENGLISH) : cached.filenameUpper;
             if (!filename.endsWith(".CSV") && !filename.endsWith(".XLS") && !filename.endsWith(".XLSX")) {
                 setProperty("error", "true");
                 setProperty("messageOnError", pluginManager.getMessage("userview.excelcsvdatafieldextraction.error.invalidFileType", getClass().getName(), getClass().getName()));
@@ -210,11 +212,12 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
             // Cache the uploaded file for follow-up import (Preview -> Import).
             UploadedFile payload;
             if (hasNewUpload) {
-                payload = new UploadedFile(filename, importFile.getBytes());
+                payload = new UploadedFile(filename, rawOriginalFilename, importFile.getBytes());
                 writeCachedUpload(session, payload);
             } else {
                 payload = cached;
             }
+            model.put("uploadedFilename", payload.displayFilename);
 
             FileType fileType = FileType.fromFilenameUpper(filename);
             int sheetIndex = 0;
@@ -862,10 +865,12 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
 
     protected static class UploadedFile {
         final String filenameUpper;
+        final String displayFilename;
         final byte[] bytes;
 
-        UploadedFile(String filenameUpper, byte[] bytes) {
+        UploadedFile(String filenameUpper, String displayFilename, byte[] bytes) {
             this.filenameUpper = filenameUpper;
+            this.displayFilename = (displayFilename != null && !displayFilename.isEmpty()) ? displayFilename : filenameUpper;
             this.bytes = bytes;
         }
     }
@@ -973,9 +978,12 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
             if (raw instanceof Map) {
                 Map m = (Map) raw;
                 Object f = m.get(SESSION_UPLOADED_FILENAME);
+                Object df = m.get(SESSION_UPLOADED_DISPLAY_FILENAME);
                 Object b = m.get(SESSION_UPLOADED_BYTES);
                 if (f instanceof String && b instanceof byte[]) {
-                    return new UploadedFile(((String) f).toUpperCase(Locale.ENGLISH), (byte[]) b);
+                    String filenameUpper = ((String) f).toUpperCase(Locale.ENGLISH);
+                    String displayFilename = (df instanceof String) ? (String) df : filenameUpper;
+                    return new UploadedFile(filenameUpper, displayFilename, (byte[]) b);
                 }
             }
         } catch (Exception e) {
@@ -996,6 +1004,7 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
         try {
             Map<String, Object> m = new HashMap<>();
             m.put(SESSION_UPLOADED_FILENAME, payload.filenameUpper);
+            m.put(SESSION_UPLOADED_DISPLAY_FILENAME, payload.displayFilename);
             m.put(SESSION_UPLOADED_BYTES, payload.bytes);
             session.setAttribute(SESSION_UPLOADED_ATTR, m);
         } catch (Exception e) {

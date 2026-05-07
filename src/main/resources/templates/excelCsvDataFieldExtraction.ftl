@@ -7,6 +7,24 @@
 </#if>
 
 <div class="viewExcelCsvDataFieldExtraction-body-content">
+    <style>
+        /* Custom file picker UI (native value can't be restored after reload) */
+        .excelcsv-filepicker { display: inline-flex; align-items: center; gap: 0.5em; flex-wrap: wrap; }
+        .excelcsv-filepicker .excelcsv-fileinput { position: absolute; left: -99999px; width: 1px; height: 1px; overflow: hidden; }
+        .excelcsv-filepicker .excelcsv-choosebtn {
+            display: inline-block;
+            padding: 0.35em 0.75em;
+            border: 1px solid #c7c7c7;
+            border-radius: 4px;
+            background: #f8f8f8;
+            color: #222;
+            cursor: pointer;
+            user-select: none;
+            line-height: 1.2;
+        }
+        .excelcsv-filepicker .excelcsv-choosebtn:hover { background: #f2f2f2; }
+        .excelcsv-filepicker .excelcsv-filename { color: #555; }
+    </style>
     <#if element.properties.customHeader! == '' >
         <h3>${element.properties.label!}</h3>
     <#else>
@@ -49,7 +67,17 @@
                     <div style="width: 100%" class="form-column" id="">
                         <div class="form-cell">
                             <label for="csvImportFile" class="label upload">@@general.method.label.selectFile@@ <span class="form-cell-validator">*</span></label>
-                            <input id="csvImportFile" type="file" name="csvImportFile"/>
+                            <div class="excelcsv-filepicker">
+                                <input id="csvImportFile" class="excelcsv-fileinput" type="file" name="csvImportFile"/>
+                                <label for="csvImportFile" class="excelcsv-choosebtn">Choose file</label>
+                                <span id="selectedFileName" class="excelcsv-filename">
+                                    <#if uploadedFilename?? && uploadedFilename?has_content>
+                                        ${uploadedFilename?html}
+                                    <#else>
+                                        No file chosen
+                                    </#if>
+                                </span>
+                            </div>
                         </div>
                         <#if isExcelFile?? && isExcelFile == 'true' && sheetNames??>
                             <div class="form-cell">
@@ -240,12 +268,22 @@
             $(this).next().toggle();
         });
 
-        // Auto-load Excel worksheets immediately after file selection
+        // Note: do not auto-submit on file selection.
+        // Submitting clears the file input (browser security) which makes it look like "No file chosen".
+        // The backend already caches the uploaded file in session during Preview/Import.
         $("#csvImportFile").on("change", function() {
-            if (!this.files || !this.files.length) {
-                return;
+            try {
+                var name = (this.files && this.files.length) ? this.files[0].name : "No file chosen";
+                $("#selectedFileName").text(name);
+            } catch (e) {
+                // ignore
             }
-            $("#doAction").val("sheets");
+        });
+
+        // If user changes worksheet, re-run preview using cached upload (no re-select needed)
+        $("#sheetIndex").on("change", function() {
+            $("#doAction").val("preview");
+            $("#previewPage").val("1");
             $("#excelCsvDataFieldExtractionForm").submit();
         });
 
