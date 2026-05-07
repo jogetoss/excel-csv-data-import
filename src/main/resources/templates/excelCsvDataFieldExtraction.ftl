@@ -8,7 +8,6 @@
 
 <div class="viewExcelCsvDataFieldExtraction-body-content">
     <style>
-        /* Custom file picker UI (native value can't be restored after reload) */
         .excelcsv-filepicker { display: inline-flex; align-items: center; gap: 0.5em; flex-wrap: wrap; }
         .excelcsv-filepicker .excelcsv-fileinput { position: absolute; left: -99999px; width: 1px; height: 1px; overflow: hidden; }
         .excelcsv-filepicker .excelcsv-choosebtn {
@@ -269,15 +268,9 @@
         });
 
         // Note: do not auto-submit on file selection.
-        // Submitting clears the file input (browser security) which makes it look like "No file chosen".
-        // The backend already caches the uploaded file in session during Preview/Import.
         $("#csvImportFile").on("change", function() {
-            try {
-                var name = (this.files && this.files.length) ? this.files[0].name : "No file chosen";
-                $("#selectedFileName").text(name);
-            } catch (e) {
-                // ignore
-            }
+            var name = (this.files && this.files.length && this.files[0] && this.files[0].name) ? this.files[0].name : "No file chosen";
+            $("#selectedFileName").text(name);
         });
 
         // If user changes worksheet, re-run preview using cached upload (no re-select needed)

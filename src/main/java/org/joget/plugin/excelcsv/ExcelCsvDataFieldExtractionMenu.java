@@ -191,8 +191,9 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
             }
 
             String rawOriginalFilename = hasNewUpload ? importFile.getOriginalFilename() : cached.displayFilename;
-            String filename = hasNewUpload ? rawOriginalFilename.toUpperCase(Locale.ENGLISH) : cached.filenameUpper;
-            if (!filename.endsWith(".CSV") && !filename.endsWith(".XLS") && !filename.endsWith(".XLSX")) {
+            rawOriginalFilename = (rawOriginalFilename != null) ? rawOriginalFilename : "";
+            String filenameUpper = hasNewUpload ? rawOriginalFilename.toUpperCase(Locale.ENGLISH) : cached.filenameUpper;
+            if (!filenameUpper.endsWith(".CSV") && !filenameUpper.endsWith(".XLS") && !filenameUpper.endsWith(".XLSX")) {
                 setProperty("error", "true");
                 setProperty("messageOnError", pluginManager.getMessage("userview.excelcsvdatafieldextraction.error.invalidFileType", getClass().getName(), getClass().getName()));
                 displayForm();
@@ -212,14 +213,14 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
             // Cache the uploaded file for follow-up import (Preview -> Import).
             UploadedFile payload;
             if (hasNewUpload) {
-                payload = new UploadedFile(filename, rawOriginalFilename, importFile.getBytes());
+                payload = new UploadedFile(filenameUpper, rawOriginalFilename, importFile.getBytes());
                 writeCachedUpload(session, payload);
             } else {
                 payload = cached;
             }
             model.put("uploadedFilename", payload.displayFilename);
 
-            FileType fileType = FileType.fromFilenameUpper(filename);
+            FileType fileType = FileType.fromFilenameUpper(filenameUpper);
             int sheetIndex = 0;
             List<String> sheetNames = new ArrayList<>();
             if (fileType == FileType.XLS || fileType == FileType.XLSX) {
