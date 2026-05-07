@@ -136,6 +136,17 @@ public class ExcelCsvDataFieldExtractionMenu extends UserviewMenu implements Pwa
             handleSubmit(model);
         } else {
             displayForm();
+            // Clear any cached upload when user visits/refeshes the menu page.
+            // This avoids confusing state where Preview still uses a previously uploaded file.
+            HttpServletRequest req = WorkflowUtil.getHttpServletRequest();
+            HttpSession session = (req != null) ? req.getSession(false) : null;
+            if (session != null) {
+                try {
+                    session.removeAttribute(SESSION_UPLOADED_ATTR);
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
 
         model.put("request", getRequestParameters());
