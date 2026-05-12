@@ -267,14 +267,26 @@
             $(this).next().toggle();
         });
 
-        // Note: do not auto-submit on file selection.
+        function excelCsvIsExcelFilename(name) {
+            if (!name) {
+                return false;
+            }
+            var n = name.toLowerCase();
+            return n.endsWith(".xls") || n.endsWith(".xlsx");
+        }
+
         $("#csvImportFile").on("change", function() {
             var name = (this.files && this.files.length && this.files[0] && this.files[0].name) ? this.files[0].name : "No file chosen";
             $("#selectedFileName").text(name);
+            if (excelCsvIsExcelFilename(name)) {
+                $("#doAction").val("sheets");
+                $("#previewPage").val("1");
+                $("#excelCsvDataFieldExtractionForm").submit();
+            }
         });
 
-        // If user changes worksheet, re-run preview using cached upload (no re-select needed)
-        $("#sheetIndex").on("change", function() {
+        // Delegated: worksheet select is injected after the "sheets" round-trip for Excel.
+        $(document).on("change", "#sheetIndex", function() {
             $("#doAction").val("preview");
             $("#previewPage").val("1");
             $("#excelCsvDataFieldExtractionForm").submit();
