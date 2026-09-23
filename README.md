@@ -1,7 +1,8 @@
 # Description
 
-This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+Excel/CSV Data Import is a Joget Userview Menu plugin that lets end users upload a .csv, .xls, or .xlsx file, preview its contents, and import the data directly into a configured Joget form's data store — without needing a developer to write custom import code.
 
+To setup and configure this plugin, please see the [documentation](https://kb.joget.org/jw/web/userview/jdocs/docs/marketplace/excelcsv-data-import).
 # Getting Help
 
 JogetOSS is a community-led team for open source software related to the [Joget](https://www.joget.org) no-code/low-code application platform.
